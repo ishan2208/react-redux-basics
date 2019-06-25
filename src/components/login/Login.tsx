@@ -5,8 +5,14 @@ import { userLogin } from '../../actions/user-login';
 import { connect } from 'react-redux';
 
 interface IUserLoginFormProps {
-    email?: string;
-    password?: string;
+    userInfo: {
+        jwtToken: string;
+        isUserLoggedIn: boolean;
+    },
+    error: {
+        isErrorOccurred: boolean;
+        errorMessage: string;
+    }
     userLogin: (email: string, password: string) => void;
 }
 
@@ -15,8 +21,6 @@ interface IUserLoginFormState {
         email: string;
         password: string;
     };
-    isErrorOccurred: boolean;
-    isLoginSuccessful: boolean;
 }
 
 class Login extends React.Component<IUserLoginFormProps, IUserLoginFormState> {
@@ -27,8 +31,6 @@ class Login extends React.Component<IUserLoginFormProps, IUserLoginFormState> {
                 email: '',
                 password: '',
             },
-            isErrorOccurred: false,
-            isLoginSuccessful: false,
         };
     }
 
@@ -51,15 +53,16 @@ class Login extends React.Component<IUserLoginFormProps, IUserLoginFormState> {
                 <input type="password" name="password" value={this.state.user.password} onChange={this.handleChange} className="pwd"/><br/><br/>
                 <button type='button' name='submit' onClick={this.onClick}>Submit</button>
 
-                {this.state.isErrorOccurred && !this.state.isLoginSuccessful ? 'Login Failed' : ''}
-                {!this.state.isErrorOccurred && this.state.isLoginSuccessful ? 'Login Success' : ''}
+                {this.props.userInfo.jwtToken && <div> Login Successful </div>}
+                {this.props.error.isErrorOccurred && <div> {this.props.error.errorMessage} </div>}
             </div>
         );
     }
 }
 
 const mapStateToProps = (state: any) => ({
-    user: state.user.user,
+    userInfo: state.user.userProfile,
+    error: state.user.error
 })
 
 const mapDispatchToProps = (dispatch: any) => ({
